@@ -15,7 +15,7 @@ O aplicație simplă de tip Weather App care permite utilizatorului să caute vr
 - HTML5
 - CSS3
 - JavaScript 
-- [OpenWeatherMap API](https://openweathermap.org/api)
+
 
 ## 🚀 Cum se folosește
 

@@ -1,20 +1,21 @@
 export const elements = {
-  searchForm: document.getElementById('search-form'),
-  cityInput: document.getElementById('city-input'),
-  locationBtn: document.getElementById('location-btn'),
-  loading: document.getElementById('loading'),
-  error: document.getElementById('error'),
-  display: document.getElementById('weather-display'),
-  cityName: document.getElementById('city-name'),
-  temperatureDisplay: document.getElementById('temperature-display'),
-  description: document.getElementById('description'),
-  humidity: document.getElementById('humidity'),
-  pressure: document.getElementById('pressure'),
-  wind: document.getElementById('wind'),
-  visibility: document.getElementById('visibility'),
-  sunrise: document.getElementById('sunrise'),
-  sunset: document.getElementById('sunset'),
+  searchForm: document.querySelector('#search-form'),
+  cityInput: document.querySelector('#city-input'),
+  locationBtn: document.querySelector('#location-btn'),
+  loading: document.querySelector('#loading'),
+  error: document.querySelector('#error'),
+  display: document.querySelector('#weather-display'),
+  cityName: document.querySelector('#city-name'),
+  temperatureDisplay: document.querySelector('#temperature-display'),
+  description: document.querySelector('#description'),
+  humidity: document.querySelector('#humidity'),
+  pressure: document.querySelector('#pressure'),
+  wind: document.querySelector('#wind'),
+  visibility: document.querySelector('#visibility'),
+  sunrise: document.querySelector('#sunrise'),
+  sunset: document.querySelector('#sunset'),
 };
+
 
 function getWeatherEmoji(description) {
   const desc = description.toLowerCase();

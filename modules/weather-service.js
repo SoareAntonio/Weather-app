@@ -1,5 +1,6 @@
 import { CONFIG , API_ENDPOINTS ,ERROR_MESSAGES,mockWeatherData } from "./config.js";
-import {updateTemperatureDisplay, showLoading, hideLoading, showError, displayWeather, elements} from "./ui-controller.js";
+import {updateTemperatureDisplay, showLoading, hideLoading, showError,showMessage, displayWeather, elements} from "./ui-controller.js";
+import { getCoords } from "./location-service.js";
 
 const buildApiUrl = (endpoint, params = {}) => {
   const url = new URL(`${CONFIG.API_BASE_URL}/${endpoint}`);

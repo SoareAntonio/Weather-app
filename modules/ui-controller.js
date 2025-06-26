@@ -91,3 +91,21 @@ export const clearInput = () => {
 export const getCityInput = () => {
   return elements.cityInput.value.trim();
 };
+
+export const showMessage = (elements, message, type = 'info') => {
+  const el = elements.error;
+
+  el.textContent = message;
+  el.className = ''; 
+  el.classList.add(type); 
+  el.id = 'error'; 
+  el.style.display = 'block'; 
+
+  elements.display.classList.add('hidden');
+
+  
+  setTimeout(() => {
+    el.style.display = 'none';
+  }, 10000);
+};
+

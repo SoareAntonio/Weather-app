@@ -1,5 +1,5 @@
 import { getCurrentWeather, getWeatherByCoords ,refreshWeather,setLastLocation} from './modules/weather-service.js';
-import { elements, showLoading, hideLoading, showError, displayWeather, clearInput, getCityInput ,loadUserPreferences,saveUserPreferences} from './modules/ui-controller.js';
+import { elements, showLoading, hideLoading, showError,showMessage, displayWeather, clearInput, getCityInput ,loadUserPreferences,saveUserPreferences} from './modules/ui-controller.js';
 import { getCoords } from './modules/location-service.js';
 
 const state = {
@@ -12,34 +12,50 @@ const state = {
 elements.unitSelect.value = state.unit;
 elements.langSelect.value = state.lang;
 
-getCoords()
-  .then((coords) => {
-    console.log('Coordonate:', coords);
-     setLastLocation({ coords }); // salvam locația
-    return getWeatherByCoords(coords.latitude, coords.longitude);
-  })
-  .then((weather) => {
-    console.log('Vremea la locația ta:', weather);
-    displayWeather(weather);
-  })
-  .catch((err) => {
-    console.error('Eroare la obținerea locației sau vremii:', err.message);
-    showError('Nu s-au putut obține datele meteo inițiale.');
-  });
 
+// Orchestrare inițială la pornire
+const initWeather = async () => {
+  try {
+    showLoading(elements, 'Detectez locația...');
+
+    const coords = await getCoords();
+    if (coords.source === 'ip') {
+      showMessage(elements, 'Locație aproximativă detectată prin IP.', 'warning');
+    }
+
+    state.currentCoords = coords;
+    state.currentCity = null;
+    setLastLocation({ coords });
+
+    showLoading(elements, 'Încarc vremea...');
+    const data = await getWeatherByCoords(coords.latitude, coords.longitude, state.unit, state.lang);
+    displayWeather(data, state.unit);
+  } catch (err) {
+    console.error('Eroare inițializare:', err.message);
+    showError(elements, 'Nu s-au putut obține datele meteo inițiale.');
+  } finally {
+    hideLoading();
+  }
+};
+
+initWeather();
 
 
 // Ascultă modificările
 elements.unitSelect.addEventListener('change', async (e) => {
   state.unit = e.target.value;
   saveUserPreferences(state.unit, state.lang);
+  if (!elements.display.classList.contains('hidden')) {
   await refreshWeather(state);
+  }
 });
 
 elements.langSelect.addEventListener('change', async (e) => {
   state.lang = e.target.value;
   saveUserPreferences(state.unit, state.lang);
+  if (!elements.display.classList.contains('hidden')){
   await refreshWeather(state);
+  }
 });
 
 const isValidCity = (city) => city.length >= 2 && /^[a-zA-ZăâîșțĂÂÎȘȚ\s-]+$/.test(city);
@@ -67,30 +83,30 @@ const handleSearch = async (e) => {
   }
 };
 
-const handleLocation = async () => {
-  if (!navigator.geolocation) {
-    showError('Geolocația nu este suportată.');
-    return;
-  }
+const handleLocationSearch = async () => {
+  try {
+    showLoading(elements, 'Detectez locația...');
 
-  showLoading();
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    try {
-      const { latitude, longitude } = position.coords;
-      const data = await getWeatherByCoords(latitude, longitude,state.unit, state.lang);
-      displayWeather(data,state.unit);
-    } catch (err) {
-      showError('Nu s-a putut obține locația.');
-    } finally {
-      hideLoading();
+    const coords = await getCoords();
+    if (coords.source === 'ip') {
+      showMessage(elements, 'Locație aproximativă detectată prin IP.', 'warning');
     }
-  });
+
+    const data = await getWeatherByCoords(coords.latitude, coords.longitude, state.unit, state.lang);
+    state.currentCoords = coords;
+    state.currentCity = null;
+    displayWeather(data, state.unit);
+  } catch (error) {
+    showError(elements, `Locația nu a putut fi determinată: ${error.message}`);
+  } finally {
+    hideLoading();
+  }
 };
 
 
 const setupEventListeners = () => {
   elements.searchForm.addEventListener('submit', handleSearch);
-  elements.locationBtn.addEventListener('click', handleLocation);
+  elements.locationBtn.addEventListener('click', handleLocationSearch);
 };
 
 setupEventListeners();

@@ -165,3 +165,51 @@ button:hover {
   color: #fff;
   text-align: center;
 }
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem; /* spațiere între grupuri */
+  justify-content: center;
+  align-items: flex-end;
+  margin: 20px auto;
+  padding: 20px;
+  border: 2px solid #d0d0d0;
+  border-radius: 10px;
+  max-width: 600px;
+  background-color: #f9f9f9;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: auto;           /* ← schimbare importantă */
+  gap: 8px;              /* ← adaugă spațiu între label și select */
+}
+
+.control-group label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.control-group select {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+  min-width: 150px;       /* opțional pentru aspect uniform */
+}
+
+.control-group select:focus {
+  border-color: #0077cc;
+  outline: none;
+}
+
+
+.control-group select:focus {
+  border-color: #0077cc;
+  outline: none;
+}

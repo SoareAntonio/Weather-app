@@ -14,6 +14,8 @@ export const elements = {
   visibility: document.querySelector('#visibility'),
   sunrise: document.querySelector('#sunrise'),
   sunset: document.querySelector('#sunset'),
+  unitSelect: document.querySelector('#unit-select'),
+  langSelect: document.querySelector('#lang-select'),
 };
 
 
@@ -25,6 +27,22 @@ function getWeatherEmoji(description) {
   if (desc.includes("ninsoare") || desc.includes("snow")) return "❄️";
   return "🌡️";
 }
+
+export const updateTemperatureDisplay = (elements, temperature, unit) => {
+  const symbol = unit === 'imperial' ? '°F' : '°C';
+  elements.temperatureDisplay.textContent = `${Math.round(temperature)}${symbol}`;
+};
+
+export const saveUserPreferences = (unit, lang) => {
+  localStorage.setItem('unit', unit);
+  localStorage.setItem('lang', lang);
+};
+
+export function loadUserPreferences() {
+  const unit = localStorage.getItem('unit') || 'metric';
+  const lang = localStorage.getItem('lang') || 'ro';
+  return { unit, lang };
+};
 
 export const showLoading = () => {
   elements.loading.classList.remove('hidden');
@@ -42,13 +60,14 @@ export const showError = (message) => {
   elements.display.classList.add('hidden');
 };
 
-export const displayWeather = (data) => {
+export const displayWeather = (data,unit = 'metric') => {
   elements.cityName.textContent = data.name;
 
   const emoji = getWeatherEmoji(data.weather[0].description);
   document.getElementById('weather-emoji').textContent = emoji;
 
-  elements.temperatureDisplay.textContent = `${Math.round(data.main.temp)}°C`;
+  const symbol = unit === 'imperial' ? '°F' : '°C';
+  elements.temperatureDisplay.textContent = `${Math.round(data.main.temp)}${symbol}`;
 
   elements.description.textContent = data.weather[0].description;
 

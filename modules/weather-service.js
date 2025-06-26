@@ -1,4 +1,5 @@
 import { CONFIG , API_ENDPOINTS ,ERROR_MESSAGES,mockWeatherData } from "./config.js";
+import {updateTemperatureDisplay, showLoading, hideLoading, showError, displayWeather, elements} from "./ui-controller.js";
 
 const buildApiUrl = (endpoint, params = {}) => {
   const url = new URL(`${CONFIG.API_BASE_URL}/${endpoint}`);
@@ -42,13 +43,13 @@ const makeRequest = async (url) => {
 };
 
 
-export const getCurrentWeather = async (city) => {
-  const url = buildApiUrl(API_ENDPOINTS.CURRENT_WEATHER, { q: city });
+export const getCurrentWeather = async (city,unit = CONFIG.DEFAULT_UNITS, lang = CONFIG.DEFAULT_LANG) => {
+  const url = buildApiUrl(API_ENDPOINTS.CURRENT_WEATHER, { q: city , units: unit, lang: lang });
   return await makeRequest(url);
 };
 
-export const getWeatherByCoords = async (lat, lon) => {
-  const url = buildApiUrl(API_ENDPOINTS.CURRENT_WEATHER, { lat, lon });
+export const getWeatherByCoords = async (lat, lon, unit = CONFIG.DEFAULT_UNITS, lang = CONFIG.DEFAULT_LANG) => {
+  const url = buildApiUrl(API_ENDPOINTS.CURRENT_WEATHER, { lat, lon, units: unit, lang: lang });
   return await makeRequest(url);
 };
 
@@ -64,3 +65,37 @@ export const getCurrentWeatherWithFallback = async (city) => {
     };
   }
 };
+
+
+let lastCity = null;
+let lastCoords = null;
+
+export const setLastLocation = ({ city = null, coords = null }) => {
+  lastCity = city;
+  lastCoords = coords;
+};
+
+export const refreshWeather = async (state) => {
+  try {
+    showLoading();
+    let data;
+
+    if (state.currentCity) {
+      data = await getCurrentWeather(state.currentCity, state.unit, state.lang);
+    } else if (state.currentCoords) {
+      const { latitude, longitude } = state.currentCoords;
+      data = await getWeatherByCoords(latitude, longitude, state.unit, state.lang);
+    } else {
+      const coords = await getCoords();
+      data = await getWeatherByCoords(coords.latitude, coords.longitude, state.unit, state.lang);
+      state.currentCoords = coords;
+    }
+
+    displayWeather(data,unit);
+  } catch (err) {
+    showError('Nu s-au putut obține datele meteo.');
+  } finally {
+    hideLoading();
+  }
+};
+
